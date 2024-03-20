@@ -141,7 +141,9 @@ def job():
 @click.option("--description")
 @click.option("--applied_date")
 @click.option("--link")
-def create(company_name, title, description=None, applied_date=None, link=None)
+def create(company_name, title, description=None, applied_date=None, link=None):
+    # Implement your create logic here
+    pass
 
 @job.command()
 @click.argument("job_id", type=int)
@@ -166,3 +168,5 @@ def find(job_id):
     else:
         click.echo(f"Job with ID {job_id} not found.")
 
+if __name__ == "__main__":
+    cli()
