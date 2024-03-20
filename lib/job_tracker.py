@@ -66,3 +66,29 @@ session = Session()
 def cli():
     """Job Application Tracker CLI"""
     pass
+
+@cli.group()
+def company():
+    pass
+
+@company.command()
+@click.argument("name")
+@click.option("--website")
+@click.option("--contact_info")
+def create(name, website=None, contact_info=None):
+    try:
+        new_company = Company(name=name, website=website, contact_info=contact_info)
+        session.add(new_company)
+        session.commit()
+        click.echo(f"Company '{name}' created successfully!")
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@company.command()
+def list():
+    companies = session.query(Company).all()
+    if companies:
+        for company in companies:
+            click.echo(company)
+    else:
+        click.echo("No companies found.")
