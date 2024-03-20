@@ -92,3 +92,40 @@ def list():
             click.echo(company)
     else:
         click.echo("No companies found.")
+
+@company.command()
+@click.argument("company_id", type=int)
+def delete(company_id):
+    try:
+        company = session.query(Company).get(company_id)
+        if company:
+            session.delete(company)
+            session.commit()
+            click.echo(f"Company '{company.name}' deleted successfully!")
+        else:
+            click.echo(f"Company with ID {company_id} not found.")
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@company.command()
+@click.argument("company_id", type=int)
+def find(company_id):
+    company = session.query(Company).get(company_id)
+    if company:
+        click.echo(company)
+    else:
+        click.echo(f"Company with ID {company_id} not found.")
+
+@company.command()
+@click.argument("company_id", type=int)
+def jobs(company_id):
+    company = session.query(Company).get(company_id)
+    if company:
+        if company.jobs:
+            click.echo(f"Jobs for company '{company.name}':")
+            for job in company.jobs:
+                click.echo(f"\t- {job}")
+        else:
+            click.echo(f"No jobs found for company '{company.name}'.")
+    else:
+        click.echo(f"Company with ID {company_id} not found.")
