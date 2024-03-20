@@ -129,3 +129,40 @@ def jobs(company_id):
             click.echo(f"No jobs found for company '{company.name}'.")
     else:
         click.echo(f"Company with ID {company_id} not found.")
+
+
+@cli.group()
+def job():
+    pass
+
+@job.command()
+@click.argument("company_name")
+@click.argument("title")
+@click.option("--description")
+@click.option("--applied_date")
+@click.option("--link")
+def create(company_name, title, description=None, applied_date=None, link=None)
+
+@job.command()
+@click.argument("job_id", type=int)
+def delete(job_id):
+    try:
+        job = session.query(Job).get(job_id)
+        if job:
+            session.delete(job)
+            session.commit()
+            click.echo(f"Job '{job.title}' deleted successfully!")
+        else:
+            click.echo(f"Job with ID {job_id} not found.")
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@job.command()
+@click.argument("job_id", type=int)
+def find(job_id):
+    job = session.query(Job).get(job_id)
+    if job:
+        click.echo(job)
+    else:
+        click.echo(f"Job with ID {job_id} not found.")
+
