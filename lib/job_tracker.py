@@ -2,6 +2,7 @@ import click
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -52,10 +53,12 @@ class Job(Base):
     @applied_date.setter
     def applied_date(self, value):
         # Validate date format (YYYY-MM-DD)
-        if not value or len(value) != 10 or not value.isdigit() or not (value[4] == "-" and value[7] == "-"):
+        try:
+            datetime.strptime(value, "%Y-%m-%d")
+        except ValueError:
             raise ValueError("Invalid applied date format (YYYY-MM-DD)")
-        self._applied_date = value
 
+        self._applied_date = value
     def __repr__(self):
         return f"<Job(id={self.id}, title='{self.title}', company='{self.company.name}')>"
 
@@ -145,8 +148,21 @@ def job():
 @click.option("--applied_date")
 @click.option("--link")
 def create(company_name, title, description=None, applied_date=None, link=None):
-    # Implement your create logic here
-    pass
+    try:
+        # Find company by name (assuming unique company names)
+        company = session.query(Company).filter_by(name=company_name).first()
+        if not company:
+            click.echo(f"Company '{company_name}' not found. Please create the company first.")
+            return
+
+        # Validate and create new job record
+        new_job = Job(company=company, title=title, description=description, applied_date=applied_date, link=link)
+        session.add(new_job)
+        session.commit()
+        click.echo(f"Job '{title}' for company '{company_name}' created successfully!")
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
 
 @job.command()
 @click.argument("job_id", type=int)
