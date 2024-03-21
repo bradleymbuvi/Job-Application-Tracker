@@ -30,8 +30,9 @@ class Contact(Base):
     email = Column(String, unique=True)
     company_id = Column(Integer, ForeignKey('companies.id'))
     company = relationship('Company', back_populates='contacts')
-    job_applications = relationship('JobApplication', back_populates='contact')
+    job_applications = relationship('JobApplication', back_populates='contact', overlaps='job_applications_list')
 
+    
     def __repr__(self):
         return f'<Contact(name={self.name}, email={self.email})>'
 
