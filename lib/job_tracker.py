@@ -16,6 +16,9 @@ class Company(Base):
     # Define a relationship with Job model (one-to-many)
     jobs = relationship("Job", backref="company")
 
+    # Define a relationship with Contact model (one-to-many)
+    contacts = relationship("Contact", back_populates="company")
+
     def __repr__(self):
         return f"<Company(id={self.id}, name='{self.name}')>"
 
