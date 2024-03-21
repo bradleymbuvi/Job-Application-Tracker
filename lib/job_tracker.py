@@ -30,6 +30,7 @@ class Contact(Base):
     email = Column(String, unique=True)
     company_id = Column(Integer, ForeignKey('companies.id'))
     company = relationship('Company', back_populates='contacts')
+    job_applications = relationship('JobApplication', back_populates='contact')
 
     def __repr__(self):
         return f'<Contact(name={self.name}, email={self.email})>'
@@ -61,6 +62,22 @@ class Job(Base):
         self._applied_date = value
     def __repr__(self):
         return f"<Job(id={self.id}, title='{self.title}', company='{self.company.name}')>"
+    
+class JobApplication(Base):
+    __tablename__ = 'job_applications'
+    id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False)
+    description = Column(String)
+    applied_date = Column(String)
+    link = Column(String)
+    company_id = Column(Integer, ForeignKey('companies.id'))
+    company = relationship('Company', backref='job_applications')
+    contact_id = Column(Integer, ForeignKey('contacts.id'))
+    contact = relationship('Contact', backref='job_applications_list')
+
+    def __repr__(self):
+        return f'<JobApplication(title={self.title}, company={self.company.name}, contact={self.contact.name})>'
+
 
 engine = create_engine("sqlite:///job_tracker.db", echo=True)
 Base.metadata.create_all(engine)
@@ -94,8 +111,9 @@ def create(name, website=None, contact_info=None):
 def list():
     companies = session.query(Company).all()
     if companies:
+        click.echo("Companies:")
         for company in companies:
-            click.echo(company)
+            click.echo(f"- {company.name}")
     else:
         click.echo("No companies found.")
 
@@ -135,6 +153,44 @@ def jobs(company_id):
             click.echo(f"No jobs found for company '{company.name}'.")
     else:
         click.echo(f"Company with ID {company_id} not found.")
+
+@cli.group()
+def contact():
+    pass
+
+@contact.command()
+@click.argument("company_name")
+@click.argument("name")
+@click.argument("email")
+@click.option("--job_title")
+@click.option("--job_description")
+@click.option("--applied_date")
+@click.option("--link")
+def add(company_name, name, email, job_title=None, job_description=None, applied_date=None, link=None):
+    try:
+        company = session.query(Company).filter(Company.name == company_name).first()
+        if not company:
+            raise ValueError(f"Company '{company_name}' not found.")
+
+        new_contact = Contact(name=name, email=email, company=company)
+        session.add(new_contact)
+
+        if job_title and job_description and applied_date:
+            new_job_application = JobApplication(
+                title=job_title,
+                description=job_description,
+                applied_date=applied_date,
+                link=link,
+                company=company,
+                contact=new_contact
+            )
+            session.add(new_job_application)
+
+        session.commit()
+        click.echo(f"Contact '{name}' added successfully!")
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
 
 
 @cli.group()
