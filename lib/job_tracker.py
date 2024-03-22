@@ -46,6 +46,7 @@ class Job(Base):
     description = Column(String(255))
     applied_date = Column(String(20))
     link = Column(String(120))
+    status = Column(String(20), default="applied")
 
     # Define property method to ensure applied date format
     @property
@@ -236,6 +237,21 @@ def delete(job_id):
         click.echo(f"Error: {e}")
 
 @job.command()
+@click.argument("job_id", type=int)
+@click.option("--status", type=str, help="Status to update the job application to")
+def update_status(job_id, status):
+    try:
+        job_application = session.query(JobApplication).get(job_id)
+        if job_application:
+            job_application.status = status
+            session.commit()
+            click.echo(f"Job application {job_id} status updated to '{status}'")
+        else:
+            click.echo(f"Job application with ID {job_id} not found.")
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@job.command()
 def list():
     jobs = session.query(Job).all()
     if jobs:
@@ -244,6 +260,7 @@ def list():
             click.echo(f"- {job}")
     else:
         click.echo("No jobs found.")
+
 
 @job.command()
 @click.argument("job_id", type=int)
