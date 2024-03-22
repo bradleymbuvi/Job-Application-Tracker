@@ -236,6 +236,16 @@ def delete(job_id):
         click.echo(f"Error: {e}")
 
 @job.command()
+def list():
+    jobs = session.query(Job).all()
+    if jobs:
+        click.echo("Jobs:")
+        for job in jobs:
+            click.echo(f"- {job}")
+    else:
+        click.echo("No jobs found.")
+
+@job.command()
 @click.argument("job_id", type=int)
 def find(job_id):
     job = session.query(Job).get(job_id)
