@@ -23,16 +23,12 @@ In today's competitive job market, managing multiple job applications, deadlines
    ```bash
    git clone https://github.com/bradleymbuvi/Job-Application-Tracker
 
-## Install dependencies:
-bash
-Copy code
-pip install 
-## Usage
-Navigate to the project directory.
-Run the CLI application:
-bash
-Copy code
-python job_tracker.py
+2. Install dependencies:
+
+3. Run pipenv install to create a virtual environment and install required Dependencies
+4. Run pipenv shell to activate the virtual environment.
+5. Start the application by executing python job_tracker.py
+
 ## CLI Commands
 
 - create _company: Create a new company.
