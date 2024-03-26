@@ -239,20 +239,6 @@ def delete(job_id):
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@job.command()
-@click.argument("job_id", type=int)
-@click.option("--status", type=str, help="Status to update the job application to")
-def update_status(job_id, status):
-    try:
-        job_application = session.query(JobApplication).get(job_id)
-        if job_application:
-            job_application.status = status
-            session.commit()
-            click.echo(f"Job application {job_id} status updated to '{status}'")
-        else:
-            click.echo(f"Job application with ID {job_id} not found.")
-    except Exception as e:
-        click.echo(f"Error: {e}")
 
 @job.command()
 def list():
