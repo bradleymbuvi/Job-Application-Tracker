@@ -45,3 +45,6 @@ In today's competitive job market, managing multiple job applications, deadlines
 - Implement filters to sort and categorize job applications based on status, deadlines, etc.
 - Add reminders and notifications for upcoming interviews and application deadlines.
 - Integration with external job boards or platforms
+
+
+Trello Board - https://trello.com/b/1TFi8veO/job-application-tracker
